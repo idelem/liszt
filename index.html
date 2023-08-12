@@ -60,6 +60,7 @@
             .mini {
                 flex-grow: 0;
                 height: var(--handle-height);
+                overflow: hidden;
             }
             .handle {
                 position: absolute;
@@ -72,12 +73,26 @@
                 position: relative;
                 border: #cccccc solid 1px;
             }
+            #days-lists {
+                display: flex;
+                flex-direction: row;
+                align-items: stretch;
+                height: 100%;
+            }
+            .day {
+                margin-top: var(--handle-height);
+                flex: 1 1 auto;
+                border: #cccccc solid 1px;
+            }
         </style>
     </head>
     <body>
         <div id="container">
             <div id="days" class="full row">
                 <div class="handle" onclick="toggle('days')">days</div>
+                <div id="days-lists">
+                    
+                </div>
             </div>
             <div id="weeks" class="full row">
                 <div class="handle" onclick="toggle('weeks')">weeks</div>
@@ -156,11 +171,25 @@
                 }
 
                 this.update = function () {
-
+                    this.update_days();
                 }
 
                 this.update_days = function () {
-                    
+                    var days_lists_el = document.getElementById("days-lists");
+                    for (var i = 0; i < 7; i++) {
+                        var day = get_nth_date_of_week(this.today, i);
+                        day.setHours(0,0,0,0);
+                        var date = day.getDate();
+
+                        var day_el = document.createElement('div');
+                        day_el.classList.add("day");
+                        day_el.innerText = `${date}`;
+                        if (is_weekend(day))
+                            day_el.classList.add("weekend");
+                        if (is_today(day))
+                            day_el.classList.add("today");
+                        days_lists_el.appendChild(day_el);
+                    }
                 }
             }
 
@@ -169,6 +198,27 @@
                 liszt.load();
                 liszt.install();
                 // document.onkeydown = (e) => {rw.keydown(e);};
+            }
+
+            function get_nth_date_of_week (date, offset, start=1) {
+                var that_day = new Date(date);
+                var day = date.getDay(); 
+                if (day === 0 && start != 0)
+                    day = 7;
+                that_day.setDate(date.getDate() - day + offset + start);
+                return that_day;
+            }
+
+            function is_weekend(date) {
+                var day = date.getDay();
+                return (day === 6) || (day === 0);
+            }
+
+            function is_today(date) {
+                var today = new Date();
+                return (today.getDate() == date.getDate()
+                    && today.getMonth() == date.getMonth()
+                    && today.getFullYear() == date.getFullYear());
             }
         </script>
     </body>
