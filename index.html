@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>liszt</title>
+        <base href="/" target="_top">
+        <style type="text/css">
+            :root {
+                --page-color: #171717;
+                --text-color: #cccccc;
+                --mark-color: #47ebc8;
+                --grid-color: #282828;
+                --handle-height: 16px;
+            }
+            :focus {
+                outline: 0;
+            }
+            body {
+                height: 100vh;
+                margin: 0;
+                overflow: hidden;
+                background: var(--page-color);
+                color: var(--text-color);
+                position: relative;
+                font-family: "inconsolata", monospace;
+            }
+            #toast {
+                opacity: 0;
+                position: fixed;
+                bottom: 2em;
+                left: 50%;
+                background-color: var(--grid-color);
+                padding: 0.5em 1em;
+                z-index: 1;
+            }
+            #toast.show {
+                animation-name: fadeinout;
+                animation-duration: 1s;
+            }
+            @-webkit-keyframes fadeinout {
+                from {bottom: 1em; opacity: 0;}
+                25% {bottom: 2em; opacity: 1;}
+                75% {bottom: 2em; opacity: 1;}
+                to {bottom: 1em; opacity: 0;}
+            }
+            @keyframes fadeinout {
+                from {bottom: 1em; opacity: 0;}
+                25% {bottom: 2em; opacity: 1;}
+                75% {bottom: 2em; opacity: 1;}
+                to {bottom: 1em; opacity: 0;}
+            }
+            #container {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+            .full {
+                flex-grow: 1;
+            }
+            .mini {
+                flex-grow: 0;
+                height: var(--handle-height);
+            }
+            .handle {
+                position: absolute;
+                top: 0;
+                height: var(--handle-height);
+                width: 100%;
+                /* border-top: #cccccc solid 1px; */
+            }
+            .row {
+                position: relative;
+                border: #cccccc solid 1px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="days" class="full row">
+                <div class="handle" onclick="toggle('days')">days</div>
+            </div>
+            <div id="weeks" class="full row">
+                <div class="handle" onclick="toggle('weeks')">weeks</div>
+            </div>
+            <div id="months" class="full row">
+                <div class="handle" onclick="toggle('months')">months</div>
+            </div>
+            <div id="years" class="full row">
+                <div class="handle" onclick="toggle('years')">years</div>
+            </div>
+            <div id="life" class="full row">
+                <div class="handle" onclick="toggle('life')">life</div>
+            </div>
+            <div id="lists" class="full row">
+                <div class="handle" onclick="toggle('lists')">lists</div>
+            </div>
+        </div>
+        <div id="toast"></div>
+        <script>
+            function toggle (id) {
+                var el = document.getElementById(id);
+                el.classList.toggle("full");
+                el.classList.toggle("mini");
+            }
+
+            function show_toast (label) {
+                var toast = document.getElementById("toast");
+                toast.innerHTML = label;
+                toast.classList.add("show");
+                setTimeout(() => {toast.classList.remove("show"); }, 1000);
+            }
+
+            function Task () {
+                
+            }
+            function Liszt () {
+                this.days = {}
+                this.weeks = {}
+                this.months = {}
+                this.years = {}
+                this.life = []
+                this.lists = {}
+                this.save = function () {
+                    const save_data = { 
+                        "days": this.days,
+                        "weeks": this.weeks,
+                        "months": this.months,
+                        "years": this.years,
+                        "lists": this.lists
+                    };
+                    window.localStorage.setItem("liszt_data", JSON.stringify(save_data));
+                }
+
+                this.load = function () {
+                    try {
+                        const load_data = JSON.parse(window.localStorage.getItem("liszt_data"));
+                        if (load_data)
+                        {
+                            load_data.keys().forEach(k => {
+                                const obj = load_data[k];
+                                obj.forEach((json) => {this[k].push(new Task(json))});
+                            }); 
+                        }
+                    }
+                    catch (e) {
+                        show_toast("failed to load data");
+                    }
+                }
+            }
+
+            window.onload = function () {
+                const liszt = new Liszt();
+                liszt.load();
+                // rw.install(document.body);
+                // document.onkeydown = (e) => {rw.keydown(e);};
+            }
+        </script>
+    </body>
+</html>
