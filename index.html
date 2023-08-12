@@ -120,6 +120,9 @@
                 this.years = {}
                 this.life = []
                 this.lists = {}
+
+                this.today = null
+
                 this.save = function () {
                     const save_data = { 
                         "days": this.days,
@@ -146,12 +149,25 @@
                         show_toast("failed to load data");
                     }
                 }
+
+                this.install = function () {
+                    this.today = new Date();
+                    this.update();
+                }
+
+                this.update = function () {
+
+                }
+
+                this.update_days = function () {
+                    
+                }
             }
 
             window.onload = function () {
                 const liszt = new Liszt();
                 liszt.load();
-                // rw.install(document.body);
+                liszt.install();
                 // document.onkeydown = (e) => {rw.keydown(e);};
             }
         </script>
