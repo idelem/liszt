@@ -128,6 +128,16 @@
             function Task () {
                 
             }
+
+            function Pane () {
+                this.tasks = []
+
+                this.install = function (host) {
+                    this.el = host
+                    
+                }
+            }
+
             function Liszt () {
                 this.days = {}
                 this.weeks = {}
@@ -189,13 +199,18 @@
                         if (is_today(day))
                             day_el.classList.add("today");
                         days_lists_el.appendChild(day_el);
+                        if (!(day in this.days)){
+                            this.days[day] = new Pane();
+                        }
+                        var pane = this.days[day];
+                        pane.install(day_el);
                     }
                 }
             }
 
             window.onload = function () {
                 const liszt = new Liszt();
-                liszt.load();
+                // liszt.load();
                 liszt.install();
                 // document.onkeydown = (e) => {rw.keydown(e);};
             }
